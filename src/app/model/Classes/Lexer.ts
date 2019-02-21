@@ -51,9 +51,14 @@ export class Lexer{
         let token: Token;
 
         if(!Accepted){
-            token = new Token(TokenTypes.Unknown, "Unknown", this.input.charAt(this.position), this.line, this.column);            
+            if(AnalyzedString.length == 0){
+                token = new Token(TokenTypes.Unknown, "Unknown", this.input.charAt(this.position), this.line, this.column);
+                return token;
+            }
 
-            return token;
+            if(AcceptingState == TypescriptFSMStates.StringLiteralSingleQuotePart || TypescriptFSMStates.StringLiteralDoubleQuotePart){
+                throw new Error(`Error: Unterminated string literal on line ${this.line}, column ${this.column}`);
+            }            
         }else{
             if(AcceptingState == TypescriptFSMStates.EndOfLine){                
                 token = new Token(TokenTypes.NewLineTrivia, TokenTypes[TokenTypes.NewLineTrivia], AnalyzedString, this.line, this.column);
@@ -66,6 +71,14 @@ export class Lexer{
 
             if(AcceptingState == TypescriptFSMStates.WhiteSpace){
                 token = new Token(TokenTypes.WhitespaceTrivia, TokenTypes[TokenTypes.WhitespaceTrivia], AnalyzedString, this.line, this.column);
+                this.position += AnalyzedString.length;
+                this.column += AnalyzedString.length;
+
+                return token;
+            }
+
+            if(AcceptingState == TypescriptFSMStates.StringLiteralDoubleQuoteEnd || AcceptingState == TypescriptFSMStates.StringLiteralSingleQuoteEnd){
+                token = new Token(TokenTypes.StringLiteral, TokenTypes[TokenTypes.StringLiteral], AnalyzedString, this.line, this.column);
                 this.position += AnalyzedString.length;
                 this.column += AnalyzedString.length;
 

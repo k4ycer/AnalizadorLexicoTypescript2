@@ -6,6 +6,7 @@ export class TypescriptFSM implements FSM{
     Alphabet: number[];
     States: number[];
     AcceptingStates: number[];
+    NotAcceptingStates: number[];
     InitialState: number;
     TransitionTable: number[][];    
 
@@ -13,6 +14,7 @@ export class TypescriptFSM implements FSM{
         this.Alphabet = this.enumToArray(CharacterCodes);
         this.States = this.enumToArray(TypescriptFSMStates);
         this.AcceptingStates = [];
+        this.NotAcceptingStates = [TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuotePart];
         this.InitialState = TypescriptFSMStates.Initial;
         this.TransitionTable = [];
 
@@ -60,7 +62,20 @@ export class TypescriptFSM implements FSM{
         this.AddTransition(TypescriptFSMStates.Exclamation, TypescriptFSMStates.ExclamationEquals, CharacterCodes.equals);
         this.AddTransition(TypescriptFSMStates.ExclamationEquals, TypescriptFSMStates.ExclamationEqualsEquals, CharacterCodes.equals);
 
-        // TODO: String Literal
+        // String Literal Single Quote
+        this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralSingleQuotePart, CharacterCodes.singleQuote);
+        this.addTransitionAllInputs(TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralSingleQuotePart);
+        this.AddTransition(TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralSingleQuoteEnd, CharacterCodes.singleQuote);
+        this.AddTransition(TypescriptFSMStates.StringLiteralSingleQuotePart, -1, CharacterCodes.lineFeed);
+        this.AddTransition(TypescriptFSMStates.StringLiteralSingleQuotePart, -1, CharacterCodes.carriageReturn);
+
+        // String Literal Double Quote
+        this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralDoubleQuotePart, CharacterCodes.doubleQuote);
+        this.addTransitionAllInputs(TypescriptFSMStates.StringLiteralDoubleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuotePart);
+        this.AddTransition(TypescriptFSMStates.StringLiteralDoubleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuoteEnd, CharacterCodes.doubleQuote);
+        this.AddTransition(TypescriptFSMStates.StringLiteralDoubleQuotePart, -1, CharacterCodes.lineFeed);
+        this.AddTransition(TypescriptFSMStates.StringLiteralDoubleQuotePart, -1, CharacterCodes.carriageReturn);
+        
 
         // TODO: Backtick
 
@@ -201,7 +216,7 @@ export class TypescriptFSM implements FSM{
         }
 
         return <FSMResult>{
-            Accepted: position > 0 ? true : false,
+            Accepted: this.NotAcceptingStates.indexOf(currentState) == -1,
             AnalyzedString: analyzedString,
             AcceptingState: currentState
         };
@@ -245,6 +260,14 @@ export class TypescriptFSM implements FSM{
     private addTransitionMultipleInputs(sourceState: number, destinationState: number, inputs: number[]){
         for(let input of inputs){
             this.AddTransition(sourceState, destinationState, input);
+        }
+    }
+
+    private addTransitionAllInputs(sourceState: number, destinationState: number){
+        for(let item in  CharacterCodes){
+            if(isNaN(Number(item))){
+                this.AddTransition(sourceState, destinationState, (<any>CharacterCodes[item]));
+            }
         }
     }
 }

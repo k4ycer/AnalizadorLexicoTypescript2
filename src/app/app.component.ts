@@ -10,12 +10,25 @@ import { Token } from './model/Classes/Token';
 })
 export class AppComponent {
 	title = 'AnalizadorLexicoTypescript2';
+	public input: string;
+	public lexer: Lexer;
 
 	ngOnInit(){
-		let input = "let hola: boolean;\nlet adios: int;\nlet hey = (hola*adios);";
-		console.log("Lexer input:\n", input)
-		let lexer: Lexer = new Lexer(input);
-		let tokens: Token[] = lexer.tokenize();
-		console.log("tokens", tokens);
+		this.input = "let hola: boolean;\nlet adios: int;\nlet hey = (hola*adios); let palabra = 'palabrita hola";		
+		this.lexer = new Lexer(this.input);
+		this.startLexicalAnalysis();
 	}	
+
+	readFile(){
+		
+	}
+
+	startLexicalAnalysis(){
+		try{
+			let tokens: Token[] = this.lexer.tokenize();
+			console.log("tokens", tokens);
+		}catch(e){
+			console.log("Lexical Analysis failed: ", e.message);
+		}	
+	}
 }
