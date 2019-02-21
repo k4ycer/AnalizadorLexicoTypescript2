@@ -14,13 +14,24 @@ export class AppComponent {
 	public lexer: Lexer;
 
 	ngOnInit(){
-		this.input = "let hola: boolean;\nlet adios: int;\nlet hey = (hola*adios); let palabra = 'palabrita hola";		
-		this.lexer = new Lexer(this.input);
-		this.startLexicalAnalysis();
+		// this.input = "let hola: boolean;\nlet adios: int;\nlet hey = (hola*adios); let palabra = 'palabrita hola'";				
+		// this.startLexicalAnalysis();
 	}	
 
-	readFile(){
-		
+	readFile(e){
+		let file = e.target.files[0];
+		if(!file){
+			return;
+		}
+
+		let reader = new FileReader();
+		reader.onload = (ef) => {
+			let contents = (<any>ef).target.result;
+			console.log("Input: ", contents);
+			this.lexer = new Lexer(contents);
+			this.startLexicalAnalysis();
+		}
+		reader.readAsText(file);
 	}
 
 	startLexicalAnalysis(){

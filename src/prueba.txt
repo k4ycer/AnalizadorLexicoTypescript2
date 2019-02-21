@@ -1,0 +1,4 @@
+let hola: boolean;
+let adios: int;
+let hey = (hola*adios);
+let palabra = 'palabrita hola'
