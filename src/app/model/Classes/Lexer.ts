@@ -1,3 +1,5 @@
+import { FSM } from './../Interfaces/FSM';
+import { LexerError } from './LexerError';
 import { CharacterCodes } from './../Constants/CharacterCodes';
 import { Token } from './Token';
 import { TypescriptFSM } from './TypescriptFSM';
@@ -10,7 +12,7 @@ export class Lexer{
     public position: number;
     public line: number;
     public column: number;
-    public typescriptFSM: TypescriptFSM;
+    public typescriptFSM: FSM;
     
     private ignoredTokens: TokenTypes[];
 
@@ -36,7 +38,11 @@ export class Lexer{
                 tokens.push(token);                
             }
 
-            token = this.getNextToken();   
+            try{
+                token = this.getNextToken();   
+            }catch(e){
+                throw new LexerError(e.message, this.line, this.column, tokens);
+            }
         }
 
         return tokens;
@@ -64,7 +70,7 @@ export class Lexer{
             }
 
             // String literal
-            if(AcceptingState == TypescriptFSMStates.StringLiteralSingleQuotePart || TypescriptFSMStates.StringLiteralDoubleQuotePart){
+            if(AcceptingState == TypescriptFSMStates.StringLiteralSingleQuotePart || AcceptingState == TypescriptFSMStates.StringLiteralDoubleQuotePart){                
                 throw new Error(`Error: Unterminated string literal on line ${this.line}, column ${this.column}`);
             }     
             

@@ -3,19 +3,58 @@
 <div class="container contenedorAnalizadorLexico">
 	<div class="header">
 		<h2 class="text-center">Typescript Lexical Analyzer</h2>
-	</div>
-	<div class="input">
-		<h2>Enter source code:</h2>
-		<input type="file" id="file-input" (change)="readFile($event)" name="Codigo fuente">
+		<h6 class="text-center">Proyecto Parcial 1</h6>
+		<h6 class="text-center">Asignatura Compiladores - Dr. Hugo Omar Alejandres Sánchez</h6>
 	</div>	
-	<div class="output">
-		<h2>Output:</h2>
-		<p *ngIf="error">{{ error }}</p>
-		<div class="tokens" *ngIf="tokenLinesUI">
-			<div class="tokenLine" *ngFor="let tokenLine of tokenLinesUI; let i = index">
-				<span>Line {{ i }}:</span><br>
-				<span *ngFor="let token of tokenLine"> &lt;Type: "{{ token.TypeString }}"", Value: "{{ token.Value }}", Line: "{{ token.Line }}", Column: "{{ token.Column }}" &gt; <br></span>
+	
+	<h2>Enter source code:</h2>
+	<input type="file" id="file-input" (change)="readFile($event)" name="Codigo fuente">
+
+	<ul class="nav nav-tabs">
+		<li class="active"><a data-toggle="tab" href="#home">Input</a></li>
+		<li><a data-toggle="tab" href="#menu1">Output</a></li>
+		<li><a data-toggle="tab" href="#menu2">State Matrix</a></li>
+	</ul>
+	
+	<div class="tab-content">
+		<div id="home" class="tab-pane in active">
+			<div class="input">
+				<h2>Input:</h2>
+				<pre>{{ input }}</pre>
+			</div>	
+		</div>
+		<div id="menu1" class="tab-pane">
+			<div class="output">
+				<h2>Output:</h2>
+				<p *ngIf="error" class="error">{{ error }}</p>
+				<div class="tokens" *ngIf="tokenLinesUI">
+					<div class="tokenLine" *ngFor="let tokenLine of tokenLinesUI; let i = index">
+						<b>Line {{ i }}:</b><br>
+						<span *ngFor="let token of tokenLine"> &lt;Type: <span class="red">"{{ token.TypeString }}"</span>, Value: <span class="red">"{{ token.Value }}"</span>, Line: <span class="blue">{{ token.Line }}</span>, Column: <span class="blue">{{ token.Column }}</span>&gt; <br></span>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
+		<div id="menu2" class="tab-pane">
+			<div class="stateMatrix" *ngIf="lexer">
+				<h2>State Matrix:</h2>
+				<table>
+					<tr>
+						<th></th>
+						<th *ngFor="let alphabetMember of characterCodesUI;">
+							{{ alphabetMember }}
+						</th>
+					</tr>
+					<tr *ngFor="let row of lexer.typescriptFSM.TransitionTable; let i = index">
+						<td>
+							{{ i }} -{{ statesUI[i] }}
+						</td>
+						<td *ngFor="let col of row">
+							{{ col }}
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>	
 </div>

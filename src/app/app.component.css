@@ -1,6 +1,40 @@
 .contenedorAnalizadorLexico{
     margin-top: 20px;
+    margin-bottom: 20px;
+}
+.tokenLine{
+    padding: 5px;
 }
 .tokenLine:nth-child(odd){
-    background: #ccc;
+    background: #ddd;
+}
+.error{
+    background: red;
+    color: #fff;
+    padding: 5px;
+}
+.red{
+    color: #b52f24;
+}
+.blue{
+    color: #3535ce;
+}
+.tokens{
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
+.input, .output{
+    margin-top: 20px;
+}
+.stateMatrix{
+    overflow-x: scroll;
+}
+.stateMatrix table{
+    border: 1px solid;
+}
+.stateMatrix table th, .stateMatrix table td{
+    border: 1px solid;
+    padding: 5px;
+}
+.nav-tabs li{
+    padding: 10px;
 }

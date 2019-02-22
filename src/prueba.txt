@@ -1,7 +1,13 @@
-let hola: boolean; // Este es un comentario
-/* Este es 
-un comentario
-multilinea *asdfs // asd */
-let adios: int;
-let hey = (hola*adios);
-let palabra = 'palabrita hola'
+// Current character is known to be a backslash. Check for Unicode escape of the form '\uXXXX'
+// and return code point value if valid Unicode escape is found. Otherwise return -1.
+function peekUnicodeEscape(): number {
+    let _pos = 0;
+    if (pos + 5 < end && text.charCodeAt(pos + 1) === CharacterCodes.u) {
+        const start = pos;
+        pos += 2;
+        const value = scanExactNumberOfHexDigits(4, /*canHaveSeparators*/ false);
+        pos = start;
+        return value;
+    }
+    return -1;
+}

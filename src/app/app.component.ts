@@ -1,6 +1,9 @@
+import { TypescriptFSMStates } from './model/Constants/TypescriptFSMStates';
+import { CharacterCodes } from './model/Constants/CharacterCodes';
 import { Component } from '@angular/core';
 import { Lexer } from './model/Classes/Lexer';
 import { Token } from './model/Classes/Token';
+import { TokenTypes } from './model/Constants/TokenTypes';
 
 
 @Component({
@@ -11,14 +14,14 @@ import { Token } from './model/Classes/Token';
 export class AppComponent {
 	title = 'AnalizadorLexicoTypescript2';
 	public lexer: Lexer;
+	public input: string;
 	public tokenLinesUI: Token[][] = [];
 	public error: string;
+	public characterCodesUI: string[];
+	public statesUI: string[];
 
 	ngOnInit(){
-		// let input = "let hola: boolean;\nlet adios: int;\nlet hey = (hola*adios); let palabra = 'palabrita hola'";				
-		// console.log("Input: ", input);
-		// this.lexer = new Lexer(input);
-		// this.startLexicalAnalysis();
+		
 	}	
 
 	readFile(e){
@@ -29,19 +32,27 @@ export class AppComponent {
 
 		let reader = new FileReader();
 		reader.onload = (ef) => {
-			let input = (<any>ef).target.result;
-			console.log("Input: ", input);
-			this.lexer = new Lexer(input);
+			this.input = (<any>ef).target.result;
+			console.log("Input: ", this.input);
+			this.lexer = new Lexer(this.input);
+			this.buildUITransitionMatrix();
 			this.startLexicalAnalysis();
 		}
 		reader.readAsText(file);
-	}
+	}	
 
 	startLexicalAnalysis(){
+		let tokens: Token[];
 		try{
-			let tokens: Token[] = this.lexer.tokenize();
-			console.log("tokens", tokens);
+			tokens = this.lexer.tokenize();
+			console.log("tokens", tokens);					
+		}catch(e){
+			console.log("Lexical Analysis failed: ", e.message);
+			this.error = "Lexical Analysis failed: " + e.message;
+			tokens = e.currentTokens;
+		}	
 
+		if(tokens){
 			let currentLine = tokens[0].Line;
 			this.tokenLinesUI[currentLine] = [];
 			tokens.forEach(token => {
@@ -51,10 +62,26 @@ export class AppComponent {
 				}
 
 				this.tokenLinesUI[currentLine].push(token);
-			});			
-		}catch(e){
-			console.log("Lexical Analysis failed: ", e.message);
-			this.error = "Lexical Analysis failed: " + e.message;
-		}	
+			});	
+		}		
+	}
+
+	buildUITransitionMatrix(){
+		this.characterCodesUI = [];
+		this.statesUI = [];
+		for(let item in CharacterCodes){
+            if(isNaN(Number(item))){
+                this.characterCodesUI.push(item);
+            }             
+		}
+
+		for(let item in TypescriptFSMStates){
+			if(isNaN(Number(item))){
+				this.statesUI.push(item);
+            }    
+		}
+		
+		console.log('characterCodesUi', this.characterCodesUI);
+		console.log('statesUI', this.statesUI);
 	}
 }
