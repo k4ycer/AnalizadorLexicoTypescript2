@@ -1,3 +1,4 @@
+import { CharacterCodes } from './../Constants/CharacterCodes';
 import { Token } from './Token';
 import { TypescriptFSM } from './TypescriptFSM';
 import { TokenTypes } from '../Constants/TokenTypes';
@@ -51,15 +52,42 @@ export class Lexer{
         let token: Token;
 
         if(!Accepted){
+            // Unknown
             if(AnalyzedString.length == 0){
                 token = new Token(TokenTypes.Unknown, "Unknown", this.input.charAt(this.position), this.line, this.column);
                 return token;
             }
 
+            // String literal
             if(AcceptingState == TypescriptFSMStates.StringLiteralSingleQuotePart || TypescriptFSMStates.StringLiteralDoubleQuotePart){
                 throw new Error(`Error: Unterminated string literal on line ${this.line}, column ${this.column}`);
-            }            
-        }else{
+            }     
+            
+            // Multi line comment
+            if(AcceptingState == TypescriptFSMStates.MultiLineCommentPart || AcceptingState == TypescriptFSMStates.MultiLineCommentEndStart){
+                throw new Error(`Error: Unterminated multi line comment on line ${this.line}, column ${this.column}`);
+            }     
+        }else{           
+            // Single line comment
+            if(AcceptingState == TypescriptFSMStates.SingleLineComment){
+                token = new Token(TokenTypes.SingleLineCommentTrivia, TokenTypes[TokenTypes.SingleLineCommentTrivia], AnalyzedString, this.line, this.column);
+                this.position += AnalyzedString.length;
+                this.column += AnalyzedString.length;
+
+                return token;
+            }
+
+            // Multi line comment
+            if(AcceptingState == TypescriptFSMStates.MultiLineCommentEnd){
+                token = new Token(TokenTypes.MultiLineCommentTrivia, TokenTypes[TokenTypes.MultiLineCommentTrivia], AnalyzedString, this.line, this.column);
+                this.position += AnalyzedString.length;
+                this.column += AnalyzedString.length;
+                this.line += this.getLineBreaksFromMultilineComment(AnalyzedString);
+
+                return token;
+            }
+            
+            // End of line
             if(AcceptingState == TypescriptFSMStates.EndOfLine){                
                 token = new Token(TokenTypes.NewLineTrivia, TokenTypes[TokenTypes.NewLineTrivia], AnalyzedString, this.line, this.column);
                 this.line++;
@@ -69,6 +97,7 @@ export class Lexer{
                 return token;
             }
 
+            // Whitespace
             if(AcceptingState == TypescriptFSMStates.WhiteSpace){
                 token = new Token(TokenTypes.WhitespaceTrivia, TokenTypes[TokenTypes.WhitespaceTrivia], AnalyzedString, this.line, this.column);
                 this.position += AnalyzedString.length;
@@ -77,6 +106,7 @@ export class Lexer{
                 return token;
             }
 
+            // String literal
             if(AcceptingState == TypescriptFSMStates.StringLiteralDoubleQuoteEnd || AcceptingState == TypescriptFSMStates.StringLiteralSingleQuoteEnd){
                 token = new Token(TokenTypes.StringLiteral, TokenTypes[TokenTypes.StringLiteral], AnalyzedString, this.line, this.column);
                 this.position += AnalyzedString.length;
@@ -84,19 +114,33 @@ export class Lexer{
 
                 return token;
             }
-                
-            // Check if is identifier
+
+
             let tokenType = TextToToken[AnalyzedString]; 
             if(!tokenType){
                 token = new Token(TokenTypes.Identifier, TokenTypes[TokenTypes.Identifier], AnalyzedString, this.line, this.column);                
             }else{
                 token = new Token(tokenType, TokenTypes[tokenType], AnalyzedString, this.line, this.column);
-            }   
-            
+            }                   
             this.position += AnalyzedString.length;
             this.column += AnalyzedString.length;
 
-            return token;
+            return token;                     
+            
         }
+    }
+
+    private getLineBreaksFromMultilineComment(comment: string): number {
+        let position: number = 0;
+        let lineBreaks = 0;
+
+        while(position < comment.length){
+            if(comment.charCodeAt(position) == CharacterCodes.carriageReturn || comment.charCodeAt(position) == CharacterCodes.lineFeed){
+                lineBreaks++;
+            }
+            position++;
+        }
+
+        return lineBreaks;
     }
 }

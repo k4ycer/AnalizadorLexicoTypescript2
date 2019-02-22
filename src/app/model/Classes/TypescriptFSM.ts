@@ -1,3 +1,4 @@
+import { CharacterCodes } from './../Constants/CharacterCodes';
 import { FSM, FSMResult } from "../Interfaces/FSM";
 import { TypescriptFSMStates } from '../Constants/TypescriptFSMStates';
 import { CharacterCodes } from '../Constants/CharacterCodes';
@@ -14,7 +15,7 @@ export class TypescriptFSM implements FSM{
         this.Alphabet = this.enumToArray(CharacterCodes);
         this.States = this.enumToArray(TypescriptFSMStates);
         this.AcceptingStates = [];
-        this.NotAcceptingStates = [TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuotePart];
+        this.NotAcceptingStates = [TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuotePart, TypescriptFSMStates.MultiLineCommentPart, TypescriptFSMStates.MultiLineCommentEndStart];
         this.InitialState = TypescriptFSMStates.Initial;
         this.TransitionTable = [];
 
@@ -123,9 +124,17 @@ export class TypescriptFSM implements FSM{
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Slash, CharacterCodes.slash);
         this.AddTransition(TypescriptFSMStates.Slash, TypescriptFSMStates.SlashEquals, CharacterCodes.equals);        
         this.AddTransition(TypescriptFSMStates.Slash, TypescriptFSMStates.SingleLineComment, CharacterCodes.slash);
-        this.AddTransition(TypescriptFSMStates.Slash, TypescriptFSMStates.MultiLineCommentStart, CharacterCodes.asterisk);
-        // TODO: Single line comment
+        this.AddTransition(TypescriptFSMStates.Slash, TypescriptFSMStates.MultiLineCommentPart, CharacterCodes.asterisk);
+        // Single line comment
+        this.addTransitionAllInputs(TypescriptFSMStates.SingleLineComment, TypescriptFSMStates.SingleLineComment);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.SingleLineComment, -1, [CharacterCodes.lineFeed, CharacterCodes.carriageReturn]);        
+
         // TODO: Multi line comment
+        this.addTransitionAllInputs(TypescriptFSMStates.MultiLineCommentPart, TypescriptFSMStates.MultiLineCommentPart);
+        this.AddTransition(TypescriptFSMStates.MultiLineCommentPart, TypescriptFSMStates.MultiLineCommentEndStart, CharacterCodes.asterisk);
+        this.addTransitionAllInputs(TypescriptFSMStates.MultiLineCommentEndStart, TypescriptFSMStates.MultiLineCommentPart);
+        this.AddTransition(TypescriptFSMStates.MultiLineCommentEndStart, TypescriptFSMStates.MultiLineCommentEnd, CharacterCodes.slash);
+        this.addTransitionAllInputs(TypescriptFSMStates.MultiLineCommentEnd, -1);
 
         // TODO: Numeric Literal
 

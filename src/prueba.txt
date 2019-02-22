@@ -1,4 +1,7 @@
-let hola: boolean;
+let hola: boolean; // Este es un comentario
+/* Este es 
+un comentario
+multilinea *asdfs // asd */
 let adios: int;
 let hey = (hola*adios);
 let palabra = 'palabrita hola'
