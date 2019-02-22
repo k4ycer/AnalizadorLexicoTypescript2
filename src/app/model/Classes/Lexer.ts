@@ -66,8 +66,29 @@ export class Lexer{
             // Multi line comment
             if(AcceptingState == TypescriptFSMStates.MultiLineCommentPart || AcceptingState == TypescriptFSMStates.MultiLineCommentEndStart){
                 throw new Error(`Error: Unterminated multi line comment on line ${this.line}, column ${this.column}`);
-            }     
-        }else{           
+            }
+            //Numeric literal
+            if(AcceptingState == TypescriptFSMStates.EnteroDecimalStart || AcceptingState == TypescriptFSMStates.ExpontenteStart 
+                 || AcceptingState == TypescriptFSMStates.ExponenteNegativoStart  || AcceptingState == TypescriptFSMStates.NumHexStart 
+                 || AcceptingState == TypescriptFSMStates.NumHexX || AcceptingState == TypescriptFSMStates.NumBinB || AcceptingState == TypescriptFSMStates.NumBinStart
+                 || AcceptingState == TypescriptFSMStates.NumOctalStart || AcceptingState == TypescriptFSMStates.NumOctalO){
+                throw new Error(`Error: Unterminated numeric literal on line ${this.line}, column ${this.column}`);
+            }            
+        }else{ 
+            //Numeric literal
+            if(AcceptingState == TypescriptFSMStates.Entero || AcceptingState == TypescriptFSMStates.EnteroDecimal || 
+              AcceptingState == TypescriptFSMStates.ExponentePositivo || AcceptingState == TypescriptFSMStates.ExponenteNegativo||
+              AcceptingState == TypescriptFSMStates.DecimalDirecto || AcceptingState == TypescriptFSMStates.NumHex ||
+              AcceptingState == TypescriptFSMStates.NumBin || AcceptingState == TypescriptFSMStates.NumOctal ){
+                token = new Token(TokenTypes.NumericLiteral, TokenTypes[TokenTypes.NumericLiteral], AnalyzedString, this.line, this.column);
+                this.column += AnalyzedString.length;
+                this.position += AnalyzedString.length;
+                
+
+                return token;
+            }
+
+
             // Single line comment
             if(AcceptingState == TypescriptFSMStates.SingleLineComment){
                 token = new Token(TokenTypes.SingleLineCommentTrivia, TokenTypes[TokenTypes.SingleLineCommentTrivia], AnalyzedString, this.line, this.column);
