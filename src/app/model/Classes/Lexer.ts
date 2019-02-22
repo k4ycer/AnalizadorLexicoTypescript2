@@ -61,7 +61,7 @@ export class Lexer{
             // Unknown
             if(AnalyzedString.length == 0){
                 // Comentar lo siguiente para asignarlo como Unknown
-                throw new Error(`Error: Invalid character '${this.input.charAt(this.position)}' on line ${this.line}, column ${this.column}`);
+                throw new Error("Error: Invalid character " + this.input.charAt(this.position) + " on line " + this.line + ", column " + this.column);
                 
                 token = new Token(TokenTypes.Unknown, "Unknown", this.input.charAt(this.position), this.line, this.column);
                 this.position += AnalyzedString.length;
@@ -71,19 +71,19 @@ export class Lexer{
 
             // String literal
             if(AcceptingState == TypescriptFSMStates.StringLiteralSingleQuotePart || AcceptingState == TypescriptFSMStates.StringLiteralDoubleQuotePart){                
-                throw new Error(`Error: Unterminated string literal on line ${this.line}, column ${this.column}`);
+                throw new Error("Error: Unterminated string literal on line "+this.line+", column "+this.column);
             }     
             
             // Multi line comment
             if(AcceptingState == TypescriptFSMStates.MultiLineCommentPart || AcceptingState == TypescriptFSMStates.MultiLineCommentEndStart){
-                throw new Error(`Error: Unterminated multi line comment on line ${this.line}, column ${this.column}`);
+                throw new Error("Error: Unterminated multi line comment on line "+this.line+", column "+this.column);
             }
             //Numeric literal
             if(AcceptingState == TypescriptFSMStates.EnteroDecimalStart || AcceptingState == TypescriptFSMStates.ExpontenteStart 
                  || AcceptingState == TypescriptFSMStates.ExponenteNegativoStart  || AcceptingState == TypescriptFSMStates.NumHexStart 
                  || AcceptingState == TypescriptFSMStates.NumHexX || AcceptingState == TypescriptFSMStates.NumBinB || AcceptingState == TypescriptFSMStates.NumBinStart
                  || AcceptingState == TypescriptFSMStates.NumOctalStart || AcceptingState == TypescriptFSMStates.NumOctalO){
-                throw new Error(`Error: Unterminated numeric literal on line ${this.line}, column ${this.column}`);
+                throw new Error("Error: Unterminated numeric literal on line "+this.line+", column "+this.column);
             }            
         }else{ 
             //Numeric literal
