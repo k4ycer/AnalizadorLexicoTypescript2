@@ -1,0 +1,6 @@
+.contenedorAnalizadorLexico{
+    margin-top: 20px;
+}
+.tokenLine:nth-child(odd){
+    background: #ccc;
+}

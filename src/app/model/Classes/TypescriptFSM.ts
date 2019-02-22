@@ -1,7 +1,6 @@
 import { CharacterCodes } from './../Constants/CharacterCodes';
 import { FSM, FSMResult } from "../Interfaces/FSM";
 import { TypescriptFSMStates } from '../Constants/TypescriptFSMStates';
-import { CharacterCodes } from '../Constants/CharacterCodes';
 
 export class TypescriptFSM implements FSM{    
     Alphabet: number[];

@@ -11,6 +11,8 @@ import { Token } from './model/Classes/Token';
 export class AppComponent {
 	title = 'AnalizadorLexicoTypescript2';
 	public lexer: Lexer;
+	public tokenLinesUI: Token[][] = [];
+	public error: string;
 
 	ngOnInit(){
 		// let input = "let hola: boolean;\nlet adios: int;\nlet hey = (hola*adios); let palabra = 'palabrita hola'";				
@@ -36,13 +38,23 @@ export class AppComponent {
 	}
 
 	startLexicalAnalysis(){
-		let tokens: Token[] = this.lexer.tokenize();
-		console.log("tokens", tokens);
-		// try{
-		// 	let tokens: Token[] = this.lexer.tokenize();
-		// 	console.log("tokens", tokens);
-		// }catch(e){
-		// 	console.log("Lexical Analysis failed: ", e.message);
-		// }	
+		try{
+			let tokens: Token[] = this.lexer.tokenize();
+			console.log("tokens", tokens);
+
+			let currentLine = tokens[0].Line;
+			this.tokenLinesUI[currentLine] = [];
+			tokens.forEach(token => {
+				if(currentLine != token.Line){
+					currentLine = token.Line;
+					this.tokenLinesUI[currentLine] = [];
+				}
+
+				this.tokenLinesUI[currentLine].push(token);
+			});			
+		}catch(e){
+			console.log("Lexical Analysis failed: ", e.message);
+			this.error = "Lexical Analysis failed: " + e.message;
+		}	
 	}
 }

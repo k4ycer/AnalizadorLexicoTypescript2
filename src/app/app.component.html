@@ -1,4 +1,21 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<router-outlet></router-outlet>
-
-<input type="file" id="file-input" (change)="readFile($event)">
+<!-- <router-outlet></router-outlet> -->
+<div class="container contenedorAnalizadorLexico">
+	<div class="header">
+		<h2 class="text-center">Typescript Lexical Analyzer</h2>
+	</div>
+	<div class="input">
+		<h2>Enter source code:</h2>
+		<input type="file" id="file-input" (change)="readFile($event)" name="Codigo fuente">
+	</div>	
+	<div class="output">
+		<h2>Output:</h2>
+		<p *ngIf="error">{{ error }}</p>
+		<div class="tokens" *ngIf="tokenLinesUI">
+			<div class="tokenLine" *ngFor="let tokenLine of tokenLinesUI; let i = index">
+				<span>Line {{ i }}:</span><br>
+				<span *ngFor="let token of tokenLine"> &lt;Type: "{{ token.TypeString }}"", Value: "{{ token.Value }}", Line: "{{ token.Line }}", Column: "{{ token.Column }}" &gt; <br></span>
+			</div>
+		</div>
+	</div>
+</div>
