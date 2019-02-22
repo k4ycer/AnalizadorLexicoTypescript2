@@ -14,7 +14,7 @@ export class TypescriptFSM implements FSM{
         this.Alphabet = this.enumToArray(CharacterCodes);
         this.States = this.enumToArray(TypescriptFSMStates);
         this.AcceptingStates = [];
-        this.NotAcceptingStates = [TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuotePart, TypescriptFSMStates.MultiLineCommentPart, TypescriptFSMStates.MultiLineCommentEndStart];
+        this.NotAcceptingStates = [TypescriptFSMStates.Initial, TypescriptFSMStates.StringLiteralSingleQuotePart, TypescriptFSMStates.StringLiteralDoubleQuotePart, TypescriptFSMStates.MultiLineCommentPart, TypescriptFSMStates.MultiLineCommentEndStart, TypescriptFSMStates.EnteroDecimalStart, TypescriptFSMStates.NumHexStart, TypescriptFSMStates.NumHexX];
         this.InitialState = TypescriptFSMStates.Initial;
         this.TransitionTable = [];
 
@@ -104,6 +104,21 @@ export class TypescriptFSM implements FSM{
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Plus, CharacterCodes.plus);
         this.AddTransition(TypescriptFSMStates.Plus, TypescriptFSMStates.PlusPlus, CharacterCodes.plus);
         this.AddTransition(TypescriptFSMStates.Plus, TypescriptFSMStates.PlusEqual, CharacterCodes.equals);
+        //Plus numeric literal
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Plus, TypescriptFSMStates.Entero , [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9])
+        
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Entero, TypescriptFSMStates.Entero , [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9])
+        this.AddTransition(TypescriptFSMStates.Entero, TypescriptFSMStates.EnteroDecimalStart , CharacterCodes.dot);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.EnteroDecimalStart, TypescriptFSMStates.EnteroDecimal ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.EnteroDecimal ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.AddTransition(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.ExpontenteStart , CharacterCodes.E);
+        this.AddTransition(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.ExpontenteStart , CharacterCodes.e);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponentePositivo, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        
+        this.AddTransition(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponenteNegativoStart , CharacterCodes.minus);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativoStart, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativo, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
 
         // Comma
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Comma, CharacterCodes.comma);
@@ -112,12 +127,54 @@ export class TypescriptFSM implements FSM{
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Minus, CharacterCodes.minus);
         this.AddTransition(TypescriptFSMStates.Minus, TypescriptFSMStates.MinusMinus, CharacterCodes.minus);
         this.AddTransition(TypescriptFSMStates.Minus, TypescriptFSMStates.MinusEquals, CharacterCodes.equals);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Minus, TypescriptFSMStates.Entero, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        // Minus numeric literal
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Entero, TypescriptFSMStates.Entero , [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9])
+        this.AddTransition(TypescriptFSMStates.Entero, TypescriptFSMStates.EnteroDecimalStart , CharacterCodes.dot);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.EnteroDecimalStart, TypescriptFSMStates.EnteroDecimal ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.EnteroDecimal ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.AddTransition(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.ExpontenteStart , CharacterCodes.E);
+        this.AddTransition(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.ExpontenteStart , CharacterCodes.e);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponentePositivo, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        
+        this.AddTransition(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponenteNegativoStart , CharacterCodes.minus);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativoStart, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativo, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
 
         // Dot
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Dot, CharacterCodes.dot);        
         this.AddTransition(TypescriptFSMStates.Dot, TypescriptFSMStates.DotDot, CharacterCodes.dot);
         this.AddTransition(TypescriptFSMStates.DotDot, TypescriptFSMStates.DotDotDot, CharacterCodes.dot);
-        // TODO: Dot -> Numeric Literal
+         // TODO: Dot -> Numeric Literal
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Dot, TypescriptFSMStates.DecimalDirecto, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.DecimalDirecto, TypescriptFSMStates.DecimalDirecto, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.AddTransition(TypescriptFSMStates.DecimalDirecto, TypescriptFSMStates.ExpontenteStart , CharacterCodes.E);
+        this.AddTransition(TypescriptFSMStates.DecimalDirecto, TypescriptFSMStates.ExpontenteStart , CharacterCodes.e);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponentePositivo, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        
+        this.AddTransition(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponenteNegativoStart , CharacterCodes.minus);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativoStart, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativo, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+               
+
+        //Numerical Literal
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Initial, TypescriptFSMStates.Entero, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.Entero, TypescriptFSMStates.Entero, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        
+        this.AddTransition(TypescriptFSMStates.Entero, TypescriptFSMStates.EnteroDecimalStart , CharacterCodes.dot);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.EnteroDecimalStart, TypescriptFSMStates.EnteroDecimal ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.EnteroDecimal ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.AddTransition(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.ExpontenteStart , CharacterCodes.E);
+        this.AddTransition(TypescriptFSMStates.EnteroDecimal, TypescriptFSMStates.ExpontenteStart , CharacterCodes.e);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponentePositivo, TypescriptFSMStates.ExponentePositivo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        
+        this.AddTransition(TypescriptFSMStates.ExpontenteStart, TypescriptFSMStates.ExponenteNegativoStart , CharacterCodes.minus);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativoStart, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.ExponenteNegativo, TypescriptFSMStates.ExponenteNegativo ,[CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7, CharacterCodes._8, CharacterCodes._9]);
+ 
 
         // Slash
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Slash, CharacterCodes.slash);
@@ -135,8 +192,36 @@ export class TypescriptFSM implements FSM{
         this.AddTransition(TypescriptFSMStates.MultiLineCommentEndStart, TypescriptFSMStates.MultiLineCommentEnd, CharacterCodes.slash);
         this.addTransitionAllInputs(TypescriptFSMStates.MultiLineCommentEnd, -1);
 
-        // TODO: Numeric Literal
+        //NumHex
+        this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.NumHexStart, CharacterCodes._0);
+        this.AddTransition(TypescriptFSMStates.NumHexStart, TypescriptFSMStates.NumHexX, CharacterCodes.x);
+        this.AddTransition(TypescriptFSMStates.NumHexStart, TypescriptFSMStates.NumHexX, CharacterCodes.X);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumHexX, TypescriptFSMStates.NumHex, [CharacterCodes.a, CharacterCodes.b, CharacterCodes.c, CharacterCodes.d, CharacterCodes.e, CharacterCodes.f]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumHexX, TypescriptFSMStates.NumHex, [CharacterCodes.A, CharacterCodes.B, CharacterCodes.C, CharacterCodes.D, CharacterCodes.E, CharacterCodes.F]);
 
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumHex, TypescriptFSMStates.NumHex, [CharacterCodes.a, CharacterCodes.b, CharacterCodes.c, CharacterCodes.d, CharacterCodes.e, CharacterCodes.f]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumHex, TypescriptFSMStates.NumHex, [CharacterCodes.A, CharacterCodes.B, CharacterCodes.C, CharacterCodes.D, CharacterCodes.E, CharacterCodes.F]);
+        
+        //NumBinary
+        this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.NumBinStart, CharacterCodes._0);
+        this.AddTransition(TypescriptFSMStates.NumBinStart, TypescriptFSMStates.NumBinB, CharacterCodes.b);
+        this.AddTransition(TypescriptFSMStates.NumBinStart, TypescriptFSMStates.NumBinB, CharacterCodes.B);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumBinB, TypescriptFSMStates.NumBin, [CharacterCodes._0, CharacterCodes._1]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumBinB, TypescriptFSMStates.NumBin, [CharacterCodes._0, CharacterCodes._1]);
+
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumBin, TypescriptFSMStates.NumBin, [CharacterCodes._0, CharacterCodes._1]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumBin, TypescriptFSMStates.NumBin, [CharacterCodes._0, CharacterCodes._1]);
+        
+        //NumOctal
+        this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.NumOctal, CharacterCodes._0);
+        this.AddTransition(TypescriptFSMStates.NumOctalStart, TypescriptFSMStates.NumOctalO, CharacterCodes.o);
+        this.AddTransition(TypescriptFSMStates.NumOctalStart, TypescriptFSMStates.NumOctalO, CharacterCodes.O);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumOctal, TypescriptFSMStates.NumOctal, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumOctal, TypescriptFSMStates.NumOctal, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7]);
+
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumOctal, TypescriptFSMStates.NumOctal, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7]);
+        this.addTransitionMultipleInputs(TypescriptFSMStates.NumOctal, TypescriptFSMStates.NumOctal, [CharacterCodes._0, CharacterCodes._1, CharacterCodes._2, CharacterCodes._3, CharacterCodes._4, CharacterCodes._5, CharacterCodes._6, CharacterCodes._7]);
+        
         // Colon
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.Colon, CharacterCodes.colon);
 

@@ -73,5 +73,26 @@ export enum TypescriptFSMStates{
     CloseBrace,
     Tilde,
     At,
+
+
+    //Num 
+    Entero,
+    EnteroDecimal,
+    EnteroDecimalStart,
+    DecimalDirecto,
+    DecimalExponente,
+    ExpontenteStart,
+    ExponentePositivo,
+    ExponenteNegativo,
+    ExponenteNegativoStart,
+    NumHex,
+    NumHexStart,
+    NumHexX,
+    NumBin,
+    NumBinStart,
+    NumBinB,
+    NumOctal,
+    NumOctalStart,
+    NumOctalO
     // Backslash,
 }
