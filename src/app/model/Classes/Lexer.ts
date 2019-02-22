@@ -54,7 +54,12 @@ export class Lexer{
         if(!Accepted){
             // Unknown
             if(AnalyzedString.length == 0){
+                // Comentar lo siguiente para asignarlo como Unknown
+                throw new Error(`Error: Invalid character '${this.input.charAt(this.position)}' on line ${this.line}, column ${this.column}`);
+                
                 token = new Token(TokenTypes.Unknown, "Unknown", this.input.charAt(this.position), this.line, this.column);
+                this.position += AnalyzedString.length;
+                this.column += AnalyzedString.length;
                 return token;
             }
 

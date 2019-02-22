@@ -1,4 +1,4 @@
-let hola: boolean; // Este es un comentario
+let holañ: boolean; // Este es un comentario
 /* Este es 
 un comentario
 multilinea *asdfs // asd */

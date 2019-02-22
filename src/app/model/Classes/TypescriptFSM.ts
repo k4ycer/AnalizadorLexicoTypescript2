@@ -190,7 +190,7 @@ export class TypescriptFSM implements FSM{
         // At
         this.AddTransition(TypescriptFSMStates.Initial, TypescriptFSMStates.At, CharacterCodes.at);
 
-        // TODO: backslash
+        // TODO: backslash        
 
         // Identifiers
         let identifierStartInputs = [CharacterCodes.$, CharacterCodes.A, CharacterCodes.B, CharacterCodes.C, CharacterCodes.D, CharacterCodes.E, CharacterCodes.F, CharacterCodes.G, CharacterCodes.H, CharacterCodes.I, CharacterCodes.J, CharacterCodes.K, CharacterCodes.L, CharacterCodes.M, CharacterCodes.N, CharacterCodes.O, CharacterCodes.P, CharacterCodes.Q, CharacterCodes.R, CharacterCodes.S, CharacterCodes.T, CharacterCodes.U, CharacterCodes.V, CharacterCodes.W, CharacterCodes.X, CharacterCodes.Y, CharacterCodes.Z, CharacterCodes.a, CharacterCodes.b, CharacterCodes.c, CharacterCodes.d, CharacterCodes.e, CharacterCodes.f, CharacterCodes.g, CharacterCodes.h, CharacterCodes.i, CharacterCodes.j, CharacterCodes.k, CharacterCodes.l, CharacterCodes.m, CharacterCodes.n, CharacterCodes.o, CharacterCodes.p, CharacterCodes.q, CharacterCodes.r, CharacterCodes.s, CharacterCodes.t, CharacterCodes.u, CharacterCodes.v, CharacterCodes.w, CharacterCodes.x, CharacterCodes.y, CharacterCodes.z];
@@ -254,7 +254,7 @@ export class TypescriptFSM implements FSM{
         return arr;
     }
 
-    private inputToColumn(input: number){
+    private inputToColumn(input: number): number{
         let counter = 0;
         for(let item in CharacterCodes){
             if(isNaN(Number(item))){
@@ -264,6 +264,8 @@ export class TypescriptFSM implements FSM{
                 counter++;
             }             
         }
+
+        return -1;
     }
 
     private addTransitionMultipleInputs(sourceState: number, destinationState: number, inputs: number[]){
